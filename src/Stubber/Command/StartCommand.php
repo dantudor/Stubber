@@ -67,7 +67,15 @@ class StartCommand extends Command
         $server = new BasicServer($port, $host);
 
         try {
-            $processService->add($host, $port, getmypid());
+            $processId = pcntl_fork();
+            if (-1 === $processId) {
+                $output->writeln('<error>The process failed to fork.</error>');
+            } elseif ($processId) {
+                $output->writeln('<info>Detaching Stubber from console</info>');
+                posix_kill(getmypid(), 9);
+            }
+            $processService->add($host, $port, posix_getpid());
+
             $output->writeln(sprintf('<info>Binding Stubber to %s:%s</info>', $host, $port));
             $server->start();
         } catch (SocketConnectionException $e) {
