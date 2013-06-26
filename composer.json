@@ -1,0 +1,27 @@
+{
+    "name": "dantudor/stubber",
+    "type": "library",
+    "description": "Stubber Server",
+    "keywords": ["stubber", "stub", "server", "mock", "test"],
+    "homepage": "http://github.com/dantudor/stubber",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dan Tudor",
+            "email": "dtudor01@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },
+    "require": {
+        "php": ">=5.3",
+        "react/http": "0.3.*",
+        "symfony/console": ">=2.1",
+        "symfony/filesystem": ">=2.1"
+    },
+    "require-dev": {
+        "dantudor/mockfs": "dev-master"
+    }
+}

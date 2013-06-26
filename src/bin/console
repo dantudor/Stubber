@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+
+require_once(__DIR__ . '/../../vendor/autoload.php');
+
+use Symfony\Component\Console\Application;
+use Stubber\Command\StartCommand;
+
+$application = new Application();
+$application->setCatchExceptions(false);
+$application->add(new StartCommand);
+$application->run();
