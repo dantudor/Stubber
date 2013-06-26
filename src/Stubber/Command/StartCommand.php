@@ -37,7 +37,7 @@ class StartCommand extends Command
             ->setDescription('Start a new Stubber Server')
             ->addArgument('host', InputArgument::REQUIRED, 'What hostname should the server use?')
             ->addArgument('port', InputArgument::REQUIRED, 'What port should the server run on?')
-            ->addArgument('pidFolder', InputArgument::OPTIONAL, 'Folder to store the process references', $defaultPidFolder);
+            ->addArgument('pidFolder', InputArgument::OPTIONAL, 'Folder to store the process references', $defaultPidFolder)
         ;
     }
 
