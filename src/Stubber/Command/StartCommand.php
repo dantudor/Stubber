@@ -3,6 +3,7 @@
 namespace Stubber\Command;
 
 use Stubber\Service\ProcessService;
+use Stubber\Service\ServerService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -53,35 +54,9 @@ class StartCommand extends Command
     {
         $output->writeln('<info>Starting new Stubber process</info>');
 
-        $host = $input->getArgument('host');
-        $port = $input->getArgument('port');
-
         $processService = new ProcessService($input->getArgument('pidFolder'));
+        $serverService = new ServerService($processService);
 
-        if (true === $processService->serverExists($host, $port)) {
-            $output->writeln('<info>Stubber already active, resetting...</info>');
-            $processService->kill($host, $port);
-        }
-
-        /** @var $server BasicServer */
-        $server = new BasicServer($port, $host);
-
-        try {
-            $processId = pcntl_fork();
-            if (-1 === $processId) {
-                $output->writeln('<error>The process failed to fork.</error>');
-            } elseif ($processId) {
-                $output->writeln('<info>Detaching Stubber from console</info>');
-                posix_kill(getmypid(), 9);
-            }
-            $processService->add($host, $port, posix_getpid());
-
-            $output->writeln(sprintf('<info>Binding Stubber to %s:%s</info>', $host, $port));
-            $server->start();
-        } catch (SocketConnectionException $e) {
-            $processService->kill($host, $port);
-            $output->writeln('<error>Unable to bind to the specified host:port</error>');
-        }
-
+        $serverService->create($input->getArgument('port'), $input->getArgument('host'));
     }
 }

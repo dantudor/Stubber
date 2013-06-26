@@ -123,4 +123,19 @@ class ProcessService
 
         return $this;
     }
+
+    /**
+     * Fork
+     *
+     * @return int
+     */
+    public function fork()
+    {
+        $processId = pcntl_fork();
+        if ($processId && -1 !== $processId) {
+            posix_kill(getmypid(), 9);
+        }
+
+        return posix_getpid();
+    }
 }
