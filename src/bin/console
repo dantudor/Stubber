@@ -5,8 +5,10 @@ require_once(__DIR__ . '/../../vendor/autoload.php');
 
 use Symfony\Component\Console\Application;
 use Stubber\Command\StartCommand;
+use Stubber\Command\StopCommand;
 
 $application = new Application();
 $application->setCatchExceptions(false);
 $application->add(new StartCommand);
+$application->add(new StopCommand);
 $application->run();
