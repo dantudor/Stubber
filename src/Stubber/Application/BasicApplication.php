@@ -1,16 +1,16 @@
 <?php
 
-namespace Stubber\Server;
+namespace Stubber\Application;
 
 use React\Http\Request;
 use React\Http\Response;
 
 /**
- * Class BasicServer
+ * Class BasicApplication
  *
- * @package Stubber\Server
+ * @package Stubber\Application
  */
-class BasicServer extends AbstractServer
+class BasicApplication extends AbstractApplication
 {
     /**
      * @param Request $request

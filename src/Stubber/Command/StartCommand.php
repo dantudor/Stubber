@@ -2,6 +2,8 @@
 
 namespace Stubber\Command;
 
+use Stubber\Application\BasicApplication;
+use Stubber\Server;
 use Stubber\Service\ProcessService;
 use Stubber\Service\ServerService;
 use Symfony\Component\Console\Command\Command;
@@ -54,9 +56,8 @@ class StartCommand extends Command
     {
         $output->writeln('<info>Starting new Stubber process</info>');
 
-        $processService = new ProcessService($input->getArgument('pidFolder'));
-        $serverService = new ServerService($processService);
-
-        $serverService->create($input->getArgument('port'), $input->getArgument('host'));
+        $server = new Server(new ProcessService($input->getArgument('pidFolder')));
+        $basicApplication = new BasicApplication('127.0.0.1', 8080, $server);
+        $basicApplication->run();
     }
 }
