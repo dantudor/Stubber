@@ -3,10 +3,13 @@
 namespace Stubber;
 
 use React\EventLoop\Factory as EventLoopFactory;
+use React\EventLoop\LoopInterface;
 use React\Socket\Server as SocketServer;
 use React\Http\Server as HttpServer;
 use React\Socket\ConnectionException;
 use Stubber\Service\ProcessService;
+use Stubber\Exception\SocketConnectionException;
+
 
 /**
  * Class Server
@@ -37,14 +40,53 @@ class Server
 
     /**
      * Constructor
+     *
+     * @param ProcessService $processService
+     * @param LoopInterface  $loop
+     * @param SocketServer   $socketServer
+     * @param HttpServer     $httpServer
      */
-    public function __construct(ProcessService $processService)
+    public function __construct(ProcessService $processService, LoopInterface $loop = null, SocketServer $socketServer = null, HttpServer $httpServer = null)
     {
         $this->processService = $processService;
 
-        $this->loop = EventLoopFactory::create();
-        $this->socketServer = new SocketServer($this->loop);
-        $this->httpServer = new HttpServer($this->socketServer);
+        if (is_null($loop)) {
+            $this->loop = EventLoopFactory::create();
+        } else {
+            $this->loop = $loop;
+        }
+
+        if (is_null($socketServer)) {
+            $this->socketServer = new SocketServer($this->loop);
+        } else {
+            $this->socketServer = $socketServer;
+        }
+
+        if (is_null($httpServer)) {
+            $this->httpServer = new HttpServer($this->socketServer);
+        } else {
+            $this->httpServer = $httpServer;
+        }
+    }
+
+    /**
+     * Get loop
+     *
+     * @return \React\EventLoop\LibEventLoop|\React\EventLoop\StreamSelectLoop
+     */
+    public function getLoop()
+    {
+        return $this->loop;
+    }
+
+    /**
+     * Get Socket Server
+     *
+     * @return SocketServer
+     */
+    public function getSocketServer()
+    {
+        return $this->socketServer;
     }
 
     /**

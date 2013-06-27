@@ -13,10 +13,12 @@ use React\Http\Response;
 class BasicApplication extends AbstractApplication
 {
     /**
-     * @param Request $request
+     * handleRequest
+     *
+     * @param Request  $request
      * @param Response $response
      */
-    public function onRequest(Request $request, Response $response)
+    public function handleRequest(Request $request, Response $response)
     {
         $response->writeHead(200, array('Content-Type' => 'text/html'));
         $response->end('Stubber Documentation');

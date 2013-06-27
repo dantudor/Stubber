@@ -40,21 +40,6 @@ abstract class AbstractApplication
         $this->host = $host;
         $this->port = $port;
         $this->server = $server;
-
-        $application = $this;
-        $this->server->getHttpServer()->on('request', function ($request, $response) use ($application) {
-            $application->onRequest($request, $response);
-        });
-    }
-
-    /**
-     * Get Port
-     *
-     * @return int
-     */
-    public function getPort()
-    {
-        return $this->port;
     }
 
     /**
@@ -68,6 +53,16 @@ abstract class AbstractApplication
     }
 
     /**
+     * Get Port
+     *
+     * @return int
+     */
+    public function getPort()
+    {
+        return $this->port;
+    }
+
+    /**
      * Get Server
      *
      * @return Server
@@ -78,20 +73,27 @@ abstract class AbstractApplication
     }
 
     /**
-     * Run
+     * Run Application
      *
      * @return AbstractApplication
      */
     public function run()
     {
+        $application = $this;
+        $this->server->getHttpServer()->on('request', function ($request, $response) use ($application) {
+            $application->onRequest($request, $response);
+        });
+
         $this->server->start($this->host, $this->port);
 
         return $this;
     }
 
     /**
+     * Handle Request
+     *
      * @param Request  $request  Request
      * @param Response $response Response
      */
-    abstract public function onRequest(Request $request, Response $response);
+    abstract public function handleRequest(Request $request, Response $response);
 }
