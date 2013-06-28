@@ -81,7 +81,7 @@ abstract class AbstractApplication
     {
         $application = $this;
         $this->server->getHttpServer()->on('request', function ($request, $response) use ($application) {
-            $application->onRequest($request, $response);
+            $application->handleRequest($request, $response);
         });
 
         $this->server->start($this->host, $this->port);
