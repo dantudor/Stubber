@@ -57,7 +57,12 @@ class StartCommand extends Command
         $output->writeln('<info>Starting new Stubber process</info>');
 
         $server = new Server(new ProcessService($input->getArgument('pidFolder')));
-        $basicApplication = new BasicApplication('127.0.0.1', 8080, $server);
+        $basicApplication = new BasicApplication(
+            $input->getArgument('host'),
+            $input->getArgument('port'),
+            $server
+        );
+
         $basicApplication->run();
     }
 }
