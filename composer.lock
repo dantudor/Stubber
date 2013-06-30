@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "2dfc8e81b42111d3ff9242362ff9c006",
+    "hash": "09d41c173e670f32b7cdde04df428711",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -406,12 +406,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/padraic/mockery.git",
-                "reference": "6dfaecabca7c74f03107e822337fd63d373d6019"
+                "reference": "92fad368f3458c6eb43252d499f4688eec792479"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/6dfaecabca7c74f03107e822337fd63d373d6019",
-                "reference": "6dfaecabca7c74f03107e822337fd63d373d6019",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/92fad368f3458c6eb43252d499f4688eec792479",
+                "reference": "92fad368f3458c6eb43252d499f4688eec792479",
                 "shasum": ""
             },
             "require": {
@@ -452,7 +452,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2013-06-18 14:15:15"
+            "time": "2013-06-27 20:35:00"
         }
     ],
     "aliases": [
