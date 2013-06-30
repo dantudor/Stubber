@@ -15,7 +15,8 @@ class BasicApplicationTest extends PHPUnit_Framework_TestCase
         $response->shouldReceive('writeHead')->once()->with(200, array('Content-Type' => 'text/html'));
         $response->shouldReceive('end')->once()->with('Stubber Documentation');
 
-        $application = new BasicApplication($host, $port, $server);
+        $application = new BasicApplication($server);
+        $application->setHost($host)->setPort($port);
         $application->handleRequest($request, $response);
     }
 }

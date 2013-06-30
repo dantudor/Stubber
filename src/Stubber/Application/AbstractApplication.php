@@ -31,15 +31,25 @@ abstract class AbstractApplication
     /**
      * Constructor
      *
-     * @param string $host Host
-     * @param int    $port Port
      * @param Server $server
      */
-    public function __construct($host, $port, Server $server)
+    public function __construct(Server $server)
+    {
+        $this->server = $server;
+    }
+
+    /**
+     * Set Host
+     *
+     * @param string $host
+     *
+     * @return $this
+     */
+    public function setHost($host)
     {
         $this->host = $host;
-        $this->port = $port;
-        $this->server = $server;
+
+        return $this;
     }
 
     /**
@@ -50,6 +60,20 @@ abstract class AbstractApplication
     public function getHost()
     {
         return $this->host;
+    }
+
+    /**
+     * Set Port
+     *
+     * @param int $port
+     *
+     * @return $this
+     */
+    public function setPort($port)
+    {
+        $this->port = $port;
+
+        return $this;
     }
 
     /**

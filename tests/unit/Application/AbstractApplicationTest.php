@@ -7,35 +7,35 @@ use React\Http\Response;
 
 class AbstractApplicationTest extends PHPUnit_Framework_TestCase
 {
-    public function testGetHost()
+    public function testSetGetHost()
     {
         $host = '127.0.0.1';
-        $port = 8080;
         $server = Mockery::mock('\Stubber\Server');
 
-        $application = new TestApplication($host, $port, $server);
+        $application = new TestApplication($server);
 
+        $this->assertNull($application->getHost());
+        $this->assertSame($application, $application->setHost($host));
         $this->assertSame($host, $application->getHost());
     }
 
     public function testGetPort()
     {
-        $host = '127.0.0.1';
         $port = 8080;
         $server = Mockery::mock('\Stubber\Server');
 
-        $application = new TestApplication($host, $port, $server);
+        $application = new TestApplication($server);
 
+        $this->assertNull($application->getPort());
+        $this->assertSame($application, $application->setPort($port));
         $this->assertSame($port, $application->getPort());
     }
 
     public function testGetServer()
     {
-        $host = '127.0.0.1';
-        $port = 8080;
         $server = Mockery::mock('\Stubber\Server');
 
-        $application = new TestApplication($host, $port, $server);
+        $application = new TestApplication($server);
 
         $this->assertSame($server, $application->getServer());
     }
@@ -50,7 +50,8 @@ class AbstractApplicationTest extends PHPUnit_Framework_TestCase
         $server->shouldReceive('getHttpServer')->once()->andReturn($httpServer);
         $server->shouldReceive('start')->once();
 
-        $application = new TestApplication($host, $port, $server);
+        $application = new TestApplication($server);
+        $application->setHost($host)->setPort($port);
         $application->run();
     }
 }
