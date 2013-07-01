@@ -77,6 +77,8 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $socketServer->shouldReceive('listen')->andThrow('\React\Socket\ConnectionException');
 
         $server = new Server($processService, $loopInterface, $socketServer, $httpServer);
+        $server->setHost($host)->setPort($port);
+
         $this->assertSame($server, $server->start($host, $port));
     }
 
@@ -98,6 +100,8 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $loopInterface->shouldReceive('run')->once();
 
         $server = new Server($processService, $loopInterface, $socketServer, $httpServer);
-        $this->assertSame($server, $server->start($host, $port));
+        $server->setHost($host)->setPort($port);
+        
+        $this->assertSame($server, $server->start());
     }
 }

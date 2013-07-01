@@ -39,6 +39,16 @@ class Server
     protected $httpServer;
 
     /**
+     * @var string
+     */
+    protected $host;
+
+    /**
+     * @var integer
+     */
+    protected $port;
+
+    /**
      * Constructor
      *
      * @param ProcessService $processService
@@ -100,25 +110,72 @@ class Server
     }
 
     /**
-     * Start the server
+     * Set Host
      *
      * @param string $host
-     * @param int    $port
+     *
+     * @return Server
+     */
+    public function setHost($host)
+    {
+        $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * Get Host
+     *
+     * @return string
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
+
+    /**
+     * Set Port
+     *
+     * @param int $port
+     *
+     * @return Server
+     */
+    public function setPort($port)
+    {
+        $this->port = $port;
+
+        return $this;
+    }
+
+    /**
+     * Get Port
+     *
+     * @return int
+     */
+    public function getPort()
+    {
+        return $this->port;
+    }
+
+
+
+    /**
+     * Start the server
      *
      * @return Server
      * @throws SocketConnectionException
      */
-    public function start($host, $port)
+    public function start()
     {
-        $this->processService->kill($host, $port);
+        $this->processService->kill($this->host, $this->port);
 
         $posixId = $this->processService->fork();
 
         try {
-            $this->socketServer->listen($port, $host);
-            $this->processService->add($host, $port, $posixId);
+            $this->socketServer->listen($this->port, $this->host);
+            $this->processService->add($this->host, $this->port, $posixId);
         } catch(ConnectionException $e) {
-            $this->processService->kill($host, $port);
+            $this->processService->kill($this->host, $this->port);
             throw new SocketConnectionException($e->getMessage(), $e->getCode());
         }
 

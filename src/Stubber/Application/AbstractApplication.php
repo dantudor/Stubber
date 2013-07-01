@@ -39,54 +39,6 @@ abstract class AbstractApplication
     }
 
     /**
-     * Set Host
-     *
-     * @param string $host
-     *
-     * @return $this
-     */
-    public function setHost($host)
-    {
-        $this->host = $host;
-
-        return $this;
-    }
-
-    /**
-     * Get Host
-     *
-     * @return string
-     */
-    public function getHost()
-    {
-        return $this->host;
-    }
-
-    /**
-     * Set Port
-     *
-     * @param int $port
-     *
-     * @return $this
-     */
-    public function setPort($port)
-    {
-        $this->port = $port;
-
-        return $this;
-    }
-
-    /**
-     * Get Port
-     *
-     * @return int
-     */
-    public function getPort()
-    {
-        return $this->port;
-    }
-
-    /**
      * Get Server
      *
      * @return Server
