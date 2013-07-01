@@ -58,19 +58,6 @@ class ProcessServiceTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(file_exists($pidFolder));
     }
 
-    /**
-     * @expectedException \Stubber\Exception\ProcessDirectoryException
-     */
-    public function testConstructThrowsExceptionWhenPidFileIsNotWritable()
-    {
-        $this->mockFs->getFileSystem()->addDirectory('99.99.99.99:1234', '/StubberLocked', 0400);
-        $this->mockFs->getFileSystem()->getChildByPath('/StubberLocked/99.99.99.99:1234')->setOwnerId(999);
-
-        $ps = new ProcessService('mfs://StubberLocked');
-
-        $this->assertFalse($ps->serverExists('99.99.99.99', 1234));
-    }
-
     public function testServerExistsReturnsTrue()
     {
         $this->mockFs->getFileSystem()->addFile('99.99.99.99:1234', 9999, '/StubberTest');
