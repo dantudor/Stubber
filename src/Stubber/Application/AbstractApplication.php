@@ -14,19 +14,19 @@ use React\Http\Response;
 abstract class AbstractApplication
 {
     /**
+     * @var Server
+     */
+    protected $server;
+
+    /**
      * @var string
      */
-    protected $host;
+    protected $serverHost;
 
     /**
      * @var int
      */
-    protected $port;
-
-    /**
-     * @var Server
-     */
-    protected $server;
+    protected $serverPort;
 
     /**
      * Constructor
@@ -49,6 +49,34 @@ abstract class AbstractApplication
     }
 
     /**
+     * Set Server Host
+     *
+     * @param string $host
+     *
+     * @return Server
+     */
+    public function setServerHost($host)
+    {
+        $this->serverHost = $host;
+
+        return $this;
+    }
+
+    /**
+     * Set Server Port
+     *
+     * @param int $port
+     *
+     * @return Server
+     */
+    public function setServerPort($port)
+    {
+        $this->serverPort = $port;
+
+        return $this;
+    }
+
+    /**
      * Run Application
      *
      * @return AbstractApplication
@@ -60,7 +88,11 @@ abstract class AbstractApplication
             $application->handleRequest($request, $response);
         });
 
-        $this->server->start($this->host, $this->port);
+        $this->server
+            ->setHost($this->serverHost)
+            ->setPort($this->serverPort)
+            ->start()
+        ;
 
         return $this;
     }
