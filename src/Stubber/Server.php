@@ -167,19 +167,32 @@ class Server
      */
     public function start()
     {
-        $this->processService->kill($this->host, $this->port);
-
+        $this->stop();
         $posixId = $this->processService->fork();
 
-        try {
-            $this->socketServer->listen($this->port, $this->host);
-            $this->processService->add($this->host, $this->port, $posixId);
-        } catch(ConnectionException $e) {
-            $this->processService->kill($this->host, $this->port);
-            throw new SocketConnectionException($e->getMessage(), $e->getCode());
+        if (null !== $posixId) {
+            try {
+                $this->socketServer->listen($this->port, $this->host);
+                $this->processService->add($this->host, $this->port, $posixId);
+            } catch(ConnectionException $e) {
+                $this->stop();
+                exit;
+            }
+
+            $this->loop->run();
         }
 
-        $this->loop->run();
+        return $this;
+    }
+
+    /**
+     * Stop the server
+     *
+     * @return Server
+     */
+    public function stop()
+    {
+        $this->processService->kill($this->host, $this->port);
 
         return $this;
     }

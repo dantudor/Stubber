@@ -114,7 +114,6 @@ class ProcessService
     public function kill($host, $port)
     {
         $serverFile = $this->pidFolder . DIRECTORY_SEPARATOR . $host . ':' . $port;
-
         $pid = $this->getPidForServer($host, $port);
         if (null !== $pid) {
             $this->filesystem->remove($serverFile);
@@ -133,7 +132,7 @@ class ProcessService
     {
         $processId = pcntl_fork();
         if ($processId && -1 !== $processId) {
-            posix_kill(getmypid(), 9);
+            return null;
         }
 
         return posix_getpid();
