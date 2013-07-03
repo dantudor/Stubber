@@ -7,6 +7,28 @@ use Stubber\Server;
  */
 class ServerTest extends PHPUnit_Framework_TestCase
 {
+    public function testGetSetHost()
+    {
+        $host = '127.0.0.1';
+        $processService = Mockery::mock('\Stubber\Service\ProcessService');
+        $server = new Server($processService);
+
+        $this->assertNull($server->getHost());
+        $this->assertSame($server, $server->setHost($host));
+        $this->assertSame($host, $server->getHost());
+    }
+
+    public function testGetSetPort()
+    {
+        $port = 8080;
+        $processService = Mockery::mock('\Stubber\Service\ProcessService');
+        $server = new Server($processService);
+
+        $this->assertNull($server->getPort());
+        $this->assertSame($server, $server->setPort($port));
+        $this->assertSame($port, $server->getPort());
+    }
+
     public function testDefaultLoop()
     {
         $processService = Mockery::mock('\Stubber\Service\ProcessService');
