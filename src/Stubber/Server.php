@@ -2,6 +2,8 @@
 
 namespace Stubber;
 
+use Pagon\ChildProcess\ChildProcess;
+use Pagon\ChildProcess\Process;
 use React\EventLoop\Factory as EventLoopFactory;
 use React\EventLoop\LoopInterface;
 use React\Socket\Server as SocketServer;
@@ -19,9 +21,9 @@ use Stubber\Exception\SocketConnectionException;
 class Server
 {
     /**
-     * @var ProcessService
+     * @var ChildProcess
      */
-    protected $processService;
+    protected $process;
 
     /**
      * @var \React\EventLoop\LibEventLoop|\React\EventLoop\StreamSelectLoop
@@ -51,15 +53,12 @@ class Server
     /**
      * Constructor
      *
-     * @param ProcessService $processService
-     * @param LoopInterface  $loop
-     * @param SocketServer   $socketServer
-     * @param HttpServer     $httpServer
+     * @param LoopInterface $loop
+     * @param SocketServer $socketServer
+     * @param HttpServer $httpServer
      */
-    public function __construct(ProcessService $processService, LoopInterface $loop = null, SocketServer $socketServer = null, HttpServer $httpServer = null)
+    public function __construct(LoopInterface $loop = null, SocketServer $socketServer = null, HttpServer $httpServer = null)
     {
-        $this->processService = $processService;
-
         if (is_null($loop)) {
             $this->loop = EventLoopFactory::create();
         } else {
@@ -157,8 +156,6 @@ class Server
         return $this->port;
     }
 
-
-
     /**
      * Start the server
      *
@@ -167,32 +164,18 @@ class Server
      */
     public function start()
     {
-        $this->stop();
-        $posixId = $this->processService->fork();
+        $server = $this;
 
-        if (null !== $posixId) {
+        $this->process = new ChildProcess();
+        $this->process->parallel(function (Process $process) use ($server) {
             try {
-                $this->socketServer->listen($this->port, $this->host);
-                $this->processService->add($this->host, $this->port, $posixId);
+                $server->getSocketServer()->listen($server->getPort(), $server->getHost());
             } catch(ConnectionException $e) {
-                $this->stop();
-                exit;
+                $process->kill(9);
             }
 
-            $this->loop->run();
-        }
-
-        return $this;
-    }
-
-    /**
-     * Stop the server
-     *
-     * @return Server
-     */
-    public function stop()
-    {
-        $this->processService->kill($this->host, $this->port);
+            $server->getLoop()->run();
+        });
 
         return $this;
     }
