@@ -9,9 +9,6 @@ use React\EventLoop\LoopInterface;
 use React\Socket\Server as SocketServer;
 use React\Http\Server as HttpServer;
 use React\Socket\ConnectionException;
-use Stubber\Service\ProcessService;
-use Stubber\Exception\SocketConnectionException;
-
 
 /**
  * Class Server
