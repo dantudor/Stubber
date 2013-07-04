@@ -2,13 +2,13 @@
 
 namespace Stubber;
 
-use Pagon\ChildProcess\ChildProcess;
-use Pagon\ChildProcess\Process;
 use React\EventLoop\Factory as EventLoopFactory;
 use React\EventLoop\LoopInterface;
 use React\Socket\Server as SocketServer;
 use React\Http\Server as HttpServer;
 use React\Socket\ConnectionException;
+use Pagon\ChildProcess\ChildProcess as ProcessService;
+use Pagon\ChildProcess\Process;
 
 /**
  * Class Server
@@ -50,12 +50,16 @@ class Server
     /**
      * Constructor
      *
-     * @param LoopInterface $loop
-     * @param SocketServer $socketServer
-     * @param HttpServer $httpServer
+     * @param ProcessService $processService
+     * @param LoopInterface  $loop
+     * @param SocketServer   $socketServer
+     * @param HttpServer     $httpServer
+     * @param Primer         $primer
      */
-    public function __construct(LoopInterface $loop = null, SocketServer $socketServer = null, HttpServer $httpServer = null)
+    public function __construct(ProcessService $processService, LoopInterface $loop = null, SocketServer $socketServer = null, HttpServer $httpServer = null, Primer $primer = null)
     {
+        $this->processService = $processService;
+
         if (is_null($loop)) {
             $this->loop = EventLoopFactory::create();
         } else {
@@ -73,6 +77,13 @@ class Server
         } else {
             $this->httpServer = $httpServer;
         }
+
+        if (is_null($primer)) {
+            $this->primer = new Primer();
+        } else {
+            $this->primer = $primer;
+        }
+        $this->primer->setServer($this);
     }
 
     /**
@@ -154,6 +165,16 @@ class Server
     }
 
     /**
+     * Get Primer
+     *
+     * @return Primer
+     */
+    public function getPrimer()
+    {
+        return $this->primer;
+    }
+
+    /**
      * Start the server
      *
      * @return Server
@@ -162,9 +183,7 @@ class Server
     public function start()
     {
         $server = $this;
-
-        $this->process = new ChildProcess();
-        $this->process->parallel(function (Process $process) use ($server) {
+        $process = $this->processService->parallel(function (Process $process) use ($server) {
             try {
                 $server->getSocketServer()->listen($server->getPort(), $server->getHost());
             } catch(ConnectionException $e) {
@@ -173,6 +192,8 @@ class Server
 
             $server->getLoop()->run();
         });
+
+        $this->primer->setProcess($process);
 
         return $this;
     }
