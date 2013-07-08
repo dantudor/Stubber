@@ -21,6 +21,6 @@ class BasicApplication extends AbstractApplication
     public function handleRequest(Request $request, Response $response)
     {
         $response->writeHead(200, array('Content-Type' => 'text/html'));
-        $response->end('Stubber Documentation');
+        $response->end('Stubber Basic Application');
     }
 }

@@ -15,7 +15,7 @@ class BasicApplicationTest extends PHPUnit_Framework_TestCase
 
         $response = Mockery::mock('\React\Http\Response');
         $response->shouldReceive('writeHead')->once()->with(200, array('Content-Type' => 'text/html'));
-        $response->shouldReceive('end')->once()->with('Stubber Documentation');
+        $response->shouldReceive('end')->once();
 
         $application = new BasicApplication($server);
         $application->getServer()

@@ -19,7 +19,9 @@
         "php": ">=5.3",
         "react/http": "0.3.*",
         "pagon/childprocess": "dev-master",
-        "symfony/filesystem": ">=2.1"
+        "symfony/filesystem": ">=2.1",
+        "dantudor/posix": "0.1.*",
+        "monolog/monolog": "1.5.*"
     },
     "require-dev": {
         "dantudor/mockfs": "dev-master",

@@ -9,7 +9,8 @@ class ServerTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        $this->mockProcessService = Mockery::mock('\Pagon\ChildProcess\ChildProcess');
+        $this->mockProcessService = Mockery::mock('\Stubber\ProcessManager');
+        $this->mockProcessService->shouldReceive('wait');
     }
 
     public function testGetSetHost()
@@ -94,14 +95,15 @@ class ServerTest extends PHPUnit_Framework_TestCase
         $this->assertSame($primer, $server->getPrimer());
     }
 
-    public function testStart()
+    public function testGetProcessManager()
     {
-        $mockProcess = Mockery::mock('\Pagon\ChildProcess\Process');
-        $this->mockProcessService->shouldReceive('parallel')->once()->andReturn($mockProcess);
-
+        $processManager = $this->mockProcessService;
         $server = new Server($this->mockProcessService);
 
-        $this->assertSame($server, $server->start());
-        $this->assertSame($mockProcess, $server->getPrimer()->getProcess());
+        $this->assertSame($processManager, $server->getProcessManager());
+    }
+
+    public function testStart()
+    {
     }
 }

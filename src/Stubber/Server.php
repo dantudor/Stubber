@@ -7,7 +7,6 @@ use React\EventLoop\LoopInterface;
 use React\Socket\Server as SocketServer;
 use React\Http\Server as HttpServer;
 use React\Socket\ConnectionException;
-use Pagon\ChildProcess\ChildProcess as ProcessService;
 use Pagon\ChildProcess\Process;
 
 /**
@@ -18,9 +17,9 @@ use Pagon\ChildProcess\Process;
 class Server
 {
     /**
-     * @var ChildProcess
+     * @var ProcessManager
      */
-    protected $process;
+    protected $processManager;
 
     /**
      * @var \React\EventLoop\LibEventLoop|\React\EventLoop\StreamSelectLoop
@@ -50,15 +49,15 @@ class Server
     /**
      * Constructor
      *
-     * @param ProcessService $processService
+     * @param ProcessManager $processManager
      * @param LoopInterface  $loop
      * @param SocketServer   $socketServer
      * @param HttpServer     $httpServer
      * @param Primer         $primer
      */
-    public function __construct(ProcessService $processService, LoopInterface $loop = null, SocketServer $socketServer = null, HttpServer $httpServer = null, Primer $primer = null)
+    public function __construct(ProcessManager $processManager, LoopInterface $loop = null, SocketServer $socketServer = null, HttpServer $httpServer = null, Primer $primer = null)
     {
-        $this->processService = $processService;
+        $this->processManager = $processManager;
 
         if (is_null($loop)) {
             $this->loop = EventLoopFactory::create();
@@ -84,6 +83,16 @@ class Server
             $this->primer = $primer;
         }
         $this->primer->setServer($this);
+    }
+
+    /**
+     * Get Process Manager
+     *
+     * @return ProcessManager
+     */
+    public function getProcessManager()
+    {
+        return $this->processManager;
     }
 
     /**
@@ -183,8 +192,10 @@ class Server
     public function start()
     {
         $server = $this;
-        $process = $this->processService->parallel(function (Process $process) use ($server) {
+
+        $process = $this->processManager->parallel(function(Process $process) use ($server) {
             try {
+                $server->getProcessManager()->registerPid($server->getHost(), $server->getPort(), $process->pid);
                 $server->getSocketServer()->listen($server->getPort(), $server->getHost());
             } catch(ConnectionException $e) {
                 $process->kill(9);
@@ -192,8 +203,6 @@ class Server
 
             $server->getLoop()->run();
         });
-
-        $this->primer->setProcess($process);
 
         return $this;
     }
