@@ -21,6 +21,8 @@
         "pagon/childprocess": "dev-master",
         "symfony/filesystem": ">=2.1",
         "dantudor/posix": "0.1.*",
+        "doctrine/annotations": "v1.1.2",
+        "jms/serializer": "0.12.0",
         "monolog/monolog": "1.5.*"
     },
     "require-dev": {

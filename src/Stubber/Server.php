@@ -8,6 +8,7 @@ use React\Socket\Server as SocketServer;
 use React\Http\Server as HttpServer;
 use React\Socket\ConnectionException;
 use Pagon\ChildProcess\Process;
+use Stubber\Application\AbstractApplication;
 
 /**
  * Class Server
@@ -20,6 +21,16 @@ class Server
      * @var ProcessManager
      */
     protected $processManager;
+
+    /**
+     * @var Primer
+     */
+    protected $primer;
+
+    /**
+     * @var Process
+     */
+    protected $process;
 
     /**
      * @var \React\EventLoop\LibEventLoop|\React\EventLoop\StreamSelectLoop
@@ -47,17 +58,25 @@ class Server
     protected $port;
 
     /**
+     * @var AbstractApplication
+     */
+    protected $application;
+
+    /**
      * Constructor
      *
      * @param ProcessManager $processManager
+     * @param Primer         $primer
      * @param LoopInterface  $loop
      * @param SocketServer   $socketServer
      * @param HttpServer     $httpServer
-     * @param Primer         $primer
      */
-    public function __construct(ProcessManager $processManager, LoopInterface $loop = null, SocketServer $socketServer = null, HttpServer $httpServer = null, Primer $primer = null)
+    public function __construct(ProcessManager $processManager, Primer $primer, LoopInterface $loop = null, SocketServer $socketServer = null, HttpServer $httpServer = null)
     {
         $this->processManager = $processManager;
+
+        $this->primer = $primer;
+        $this->primer->setServer($this);
 
         if (is_null($loop)) {
             $this->loop = EventLoopFactory::create();
@@ -76,13 +95,6 @@ class Server
         } else {
             $this->httpServer = $httpServer;
         }
-
-        if (is_null($primer)) {
-            $this->primer = new Primer();
-        } else {
-            $this->primer = $primer;
-        }
-        $this->primer->setServer($this);
     }
 
     /**
@@ -93,6 +105,16 @@ class Server
     public function getProcessManager()
     {
         return $this->processManager;
+    }
+
+    /**
+     * Get Prime Manager
+     *
+     * @return Primer
+     */
+    public function getPrimer()
+    {
+        return $this->primer;
     }
 
     /**
@@ -174,13 +196,37 @@ class Server
     }
 
     /**
-     * Get Primer
+     * Get Process
      *
-     * @return Primer
+     * @return Process
      */
-    public function getPrimer()
+    public function getProcess()
     {
-        return $this->primer;
+        return $this->process;
+    }
+
+    /**
+     * Set Application
+     *
+     * @param AbstractApplication $application
+     *
+     * @return $this
+     */
+    public function setApplication(AbstractApplication $application)
+    {
+        $this->application = $application;
+
+        return $this;
+    }
+
+    /**
+     * Get Application
+     *
+     * @return AbstractApplication
+     */
+    public function getApplication()
+    {
+        return $this->application;
     }
 
     /**
@@ -191,9 +237,10 @@ class Server
      */
     public function start()
     {
-        $server = $this;
+        $this->primer->prepare();
 
-        $process = $this->processManager->parallel(function(Process $process) use ($server) {
+        $server = $this;
+        $this->process = $this->processManager->parallel(function(Process $process) use ($server) {
             try {
                 $server->getProcessManager()->registerPid($server->getHost(), $server->getPort(), $process->pid);
                 $server->getSocketServer()->listen($server->getPort(), $server->getHost());

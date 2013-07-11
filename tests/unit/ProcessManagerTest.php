@@ -22,6 +22,7 @@ class ProcessManagerTest extends PHPUnit_Framework_TestCase
     {
         $filesystem = Mockery::mock('\Symfony\Component\Filesystem\Filesystem');
         $filesystem->shouldReceive('exists')->andReturn(false);
+        $filesystem->shouldReceive('mkdir')->andReturn(true);
 
         $posix = Mockery::mock('\Posix\Posix');
 
@@ -40,6 +41,7 @@ class ProcessManagerTest extends PHPUnit_Framework_TestCase
 
         $filesystem = Mockery::mock('\Symfony\Component\Filesystem\Filesystem');
         $filesystem->shouldReceive('exists')->andReturn(false);
+        $filesystem->shouldReceive('mkdir')->andReturn(true);
 
         $posix = Mockery::mock('\Posix\Posix');
 

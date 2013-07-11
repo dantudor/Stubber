@@ -7,6 +7,7 @@ use Pagon\ChildProcess\Process;
 use Posix\Posix;
 use Symfony\Component\Filesystem\Filesystem;
 
+
 /**
  * Class ProcessManager
  *
@@ -52,13 +53,13 @@ class ProcessManager extends ChildProcess
         $this->registerShutdownHandlers();
 
         if (is_null($pidFolder)) {
-            $this->pidFolder = sys_get_temp_dir() . 'process';
+            $this->pidFolder = sys_get_temp_dir() . 'stubber/process';
         } else {
             $this->pidFolder = $pidFolder;
         }
 
         if (false === $this->filesystem->exists($this->pidFolder)) {
-            mkdir($this->pidFolder);
+            $this->filesystem->mkdir($this->pidFolder, 0777, true);
         }
     }
 

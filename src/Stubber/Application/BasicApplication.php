@@ -4,6 +4,7 @@ namespace Stubber\Application;
 
 use React\Http\Request;
 use React\Http\Response;
+use Stubber\Exception\PrimerException;
 
 /**
  * Class BasicApplication
@@ -12,15 +13,17 @@ use React\Http\Response;
  */
 class BasicApplication extends AbstractApplication
 {
-    /**
-     * handleRequest
-     *
-     * @param Request  $request
-     * @param Response $response
-     */
     public function handleRequest(Request $request, Response $response)
     {
-        $response->writeHead(200, array('Content-Type' => 'text/html'));
-        $response->end('Stubber Basic Application');
+        try {
+            $expectedRequest = $this->getExpectedRequest();
+            if (true === $this->validateRequest($expectedRequest, $request)) {
+                $response->writeHead($expectedRequest->getResponseOption('status'), array('Content-Type' => 'text/html'));
+                $response->end('Stubber Basic Application');
+            }
+        } catch(PrimerException $e) {
+            $response->writeHead(418, array('Content-Type' => 'text/html'));
+            $response->end('Stubber not primed for this request');
+        }
     }
 }

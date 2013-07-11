@@ -1,14 +1,44 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 
-require __DIR__ . '/../vendor/autoload.php';
+require_once('bootstrap.php');
 
-$processService = new Spork\ProcessManager();
+use Symfony\Component\Filesystem\Filesystem;
+use Posix\Posix;
+use Stubber\ProcessManager;
+use JMS\Serializer\SerializerBuilder;
+use Stubber\Primer;
+use Stubber\Server;
+use Stubber\Application\BasicApplication;
 
-$server = new \Stubber\Server($processService);
+$filesystem = new Filesystem();
+$processManager = new ProcessManager($filesystem, new Posix());
+$primer = new Primer($filesystem, SerializerBuilder::create()->build());
 
-$app = new \Stubber\Application\BasicApplication($server);
+$app = new BasicApplication(new Server($processManager, $primer));
 $app->setServerHost($_GET['host']);
 $app->setServerPort($_GET['port']);
 $app->run();
+
+// PRIMER FROM NOW ON
+$request = new Primer\Request();
+$request
+    ->setMethod('GET')
+    ->setPath('/')
+    ->addResponseOption('status', 200)
+;
+$app->getServer()->getPrimer()->addPrimedRequest($request);
+
+$request = new Primer\Request();
+$request
+    ->setMethod('GET')
+    ->setPath('/favicon.ico')
+    ->addResponseOption('status', 200)
+;
+$app->getServer()->getPrimer()->addPrimedRequest($request);
+
+sleep(60);
+
+
+// Done
+$app->getServer()->getProcess()->kill(9);
+die('DONE');
