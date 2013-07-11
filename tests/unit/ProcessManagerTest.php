@@ -13,7 +13,7 @@ class ProcessManagerTest extends PHPUnit_Framework_TestCase
         $mockFs = new \MockFs\MockFs();
         $mockFs->getFileSystem()->addDirectory('process');
 
-        $processManager = new \Stubber\ProcessManager($filesystem, $posix, array(), 'mfs::/process');
+        $processManager = new \Stubber\ProcessManager($filesystem, $posix, 'mfs::/process');
 
         $this->assertTrue($processManager->pidExists('127.0.0.1', 8080));
     }
@@ -28,7 +28,7 @@ class ProcessManagerTest extends PHPUnit_Framework_TestCase
 
         $mockFs = new \MockFs\MockFs();
 
-        $processManager = new \Stubber\ProcessManager($filesystem, $posix, array(), 'mfs://process');
+        $processManager = new \Stubber\ProcessManager($filesystem, $posix, 'mfs://process');
 
         $this->assertFalse($processManager->pidExists('127.0.0.1', 8080));
     }
@@ -48,7 +48,7 @@ class ProcessManagerTest extends PHPUnit_Framework_TestCase
         $mockFs = new \MockFs\MockFs();
         $mockFs->getFileSystem()->addDirectory('process');
 
-        $processManager = new \Stubber\ProcessManager($filesystem, $posix, array(), 'mfs://process');
+        $processManager = new \Stubber\ProcessManager($filesystem, $posix, 'mfs://process');
 
         $this->assertSame($processManager, $processManager->registerPid($host, $port, $pid));
         $this->assertTrue(file_exists('mfs://process/' . $host . '-' . $port));
@@ -71,7 +71,7 @@ class ProcessManagerTest extends PHPUnit_Framework_TestCase
         $mockFs = new \MockFs\MockFs();
         $mockFs->getFileSystem()->addFile('127.0.0.1-8080', $oldPid, '/process');
 
-        $processManager = new \Stubber\ProcessManager($filesystem, $posix, array(), 'mfs://process');
+        $processManager = new \Stubber\ProcessManager($filesystem, $posix, 'mfs://process');
 
         $this->assertTrue(file_exists('mfs://process/' . $host . '-' . $port));
         $this->assertSame($oldPid, file_get_contents('mfs://process/' . $host . '-' . $port));

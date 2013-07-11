@@ -35,16 +35,12 @@ class ProcessManager extends ChildProcess
      *
      * @param Filesystem $filesystem
      * @param Posix      $posix
-     * @param array      $options
      * @param string     $pidFolder
      */
-    public function __construct(Filesystem $filesystem, Posix $posix, array $options = array(), $pidFolder = null)
+    public function __construct(Filesystem $filesystem, Posix $posix, $pidFolder = null)
     {
         $this->filesystem = $filesystem;
         $this->posix = $posix;
-
-        // Save options
-        $this->options = $options + $this->options;
 
         // Prepare resource and data
         $this->ppid = $this->pid = posix_getpid();
