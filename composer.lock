@@ -3,8 +3,46 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "f924c3220f8ad82ded3f2582fd6ea0a1",
+    "hash": "45d8c5fae30d75707bfbc7dfa149a8f2",
     "packages": [
+        {
+            "name": "dantudor/pcntl",
+            "version": "0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dantudor/Pcntl.git",
+                "reference": "0.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dantudor/Pcntl/zipball/0.1",
+                "reference": "0.1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Pcntl": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Dan Tudor",
+                    "email": "dtudor01@gmail.com",
+                    "homepage": "http://github.com/dantudor",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Pcntl Wrapper",
+            "keywords": [
+                "pcntl"
+            ],
+            "time": "2013-07-15 17:30:30"
+        },
         {
             "name": "dantudor/posix",
             "version": "0.1.1",
@@ -43,6 +81,59 @@
                 "posix"
             ],
             "time": "2013-07-03 15:26:50"
+        },
+        {
+            "name": "dantudor/process-control",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dantudor/ProcessControl.git",
+                "reference": "4740ba499d4ef492632f35d61b50f84a2d902d04"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dantudor/ProcessControl/zipball/4740ba499d4ef492632f35d61b50f84a2d902d04",
+                "reference": "4740ba499d4ef492632f35d61b50f84a2d902d04",
+                "shasum": ""
+            },
+            "require": {
+                "dantudor/pcntl": "0.1.*",
+                "dantudor/posix": "0.1.*",
+                "php": ">=5.3",
+                "phpcollection/phpcollection": "0.2"
+            },
+            "require-dev": {
+                "dantudor/mockfs": "dev-master",
+                "mockery/mockery": "dev-master@dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ProcessControl": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dan Tudor",
+                    "email": "dtudor01@gmail.com",
+                    "homepage": "http://github.com/dantudor",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Process Control // PCNTL // POSIX",
+            "homepage": "http://github.com/dantudor/ProcessControl",
+            "keywords": [
+                "daemon",
+                "fork",
+                "pcntl",
+                "posix",
+                "process"
+            ],
+            "time": "2013-07-16 18:02:36"
         },
         {
             "name": "doctrine/annotations",
@@ -404,93 +495,6 @@
                 "xml"
             ],
             "time": "2013-03-28 16:41:24"
-        },
-        {
-            "name": "pagon/childprocess",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hfcorriez/php-childprocess.git",
-                "reference": "60d3d35dec91a2a4e9bf83893a3ad2da53573118"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hfcorriez/php-childprocess/zipball/60d3d35dec91a2a4e9bf83893a3ad2da53573118",
-                "reference": "60d3d35dec91a2a4e9bf83893a3ad2da53573118",
-                "shasum": ""
-            },
-            "require": {
-                "ext-pcntl": "*",
-                "ext-posix": "*",
-                "pagon/eventemitter": "*",
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "ext-sysvmsg": "*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Pagon\\ChildProcess": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Corrie Zhao",
-                    "email": "hfcorriez@gmail.com"
-                }
-            ],
-            "description": "PHP child process manager",
-            "keywords": [
-                "childprocess",
-                "pcntl",
-                "process"
-            ],
-            "time": "2013-04-06 16:01:57"
-        },
-        {
-            "name": "pagon/eventemitter",
-            "version": "0.4.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hfcorriez/php-eventemitter.git",
-                "reference": "0.4.1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hfcorriez/php-eventemitter/zipball/0.4.1",
-                "reference": "0.4.1",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Pagon\\Event": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Corrie Zhao",
-                    "email": "hfcorriez@gmail.com"
-                }
-            ],
-            "description": "Event Emitter for PHP",
-            "keywords": [
-                "event",
-                "event emitter"
-            ],
-            "time": "2013-05-03 11:10:48"
         },
         {
             "name": "phpcollection/phpcollection",
@@ -909,7 +913,7 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "pagon/childprocess": 20,
+        "dantudor/process-control": 20,
         "dantudor/mockfs": 20,
         "mockery/mockery": 20
     },

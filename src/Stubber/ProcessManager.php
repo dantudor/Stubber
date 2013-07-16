@@ -2,9 +2,7 @@
 
 namespace Stubber;
 
-use Pagon\ChildProcess\ChildProcess;
-use Pagon\ChildProcess\Process;
-use Posix\Posix;
+use ProcessControl\ProcessControlService;
 use Symfony\Component\Filesystem\Filesystem;
 
 
@@ -13,7 +11,7 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @package Stubber
  */
-class ProcessManager extends ChildProcess
+class ProcessManager
 {
     /**
      * @var Filesystem
@@ -21,9 +19,9 @@ class ProcessManager extends ChildProcess
     protected $filesystem;
 
     /**
-     * @var Posix
+     * @var ProcessControlService
      */
-    protected $posix;
+    protected $processControlService;
 
     /**
      * @var string
@@ -33,26 +31,16 @@ class ProcessManager extends ChildProcess
     /**
      * Constructor
      *
-     * @param Filesystem $filesystem
-     * @param Posix      $posix
-     * @param string     $pidFolder
+     * @param Filesystem            $filesystem
+     * @param ProcessControlService $processControlService
+     * @param null|string           $pidFolder
      */
-    public function __construct(Filesystem $filesystem, Posix $posix, $pidFolder = null)
+    public function __construct(Filesystem $filesystem, ProcessControlService $processControlService, $pidFolder = null)
     {
         $this->filesystem = $filesystem;
-        $this->posix = $posix;
+        $this->processControlService = $processControlService;
 
-        // Prepare resource and data
-        $this->ppid = $this->pid = posix_getpid();
-        $this->process = new Process($this, $this->pid, $this->ppid, true);
-        $this->registerSigHandlers();
-        $this->registerShutdownHandlers();
-
-        if (is_null($pidFolder)) {
-            $this->pidFolder = sys_get_temp_dir() . 'stubber/process';
-        } else {
-            $this->pidFolder = $pidFolder;
-        }
+        $this->pidFolder =  (is_null($pidFolder)) ? sys_get_temp_dir() . 'stubber/process' : $pidFolder;
 
         if (false === $this->filesystem->exists($this->pidFolder)) {
             $this->filesystem->mkdir($this->pidFolder, 0777, true);
@@ -104,6 +92,17 @@ class ProcessManager extends ChildProcess
      */
     public function terminatePid($host, $port)
     {
-        $this->posix->kill(file_get_contents($this->pidFolder . '/' . $host . '-' . $port), 9);
+        $processFile = $this->pidFolder . '/' . $host . '-' . $port;
+        if ($this->filesystem->exists($processFile)) {
+            $processId = file_get_contents($this->pidFolder . '/' . $host . '-' . $port);
+
+            if ($this->processControlService->getMaster()->hasChildById($processId)) {
+                $this->processControlService->terminateProcess(
+                    $this->processControlService->getMaster()->getChildById($processId)
+                );
+            }
+
+            $this->filesystem->remove($processFile);
+        }
     }
 }

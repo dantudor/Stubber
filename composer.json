@@ -18,12 +18,12 @@
     "require": {
         "php": ">=5.3",
         "react/http": "0.3.*",
-        "pagon/childprocess": "dev-master",
         "symfony/filesystem": ">=2.1",
-        "dantudor/posix": "0.1.*",
+        "dantudor/process-control": "dev-master",
         "doctrine/annotations": "v1.1.2",
         "jms/serializer": ">=0.11.0",
-        "phpcollection/phpcollection": ">=0.2.0"
+        "phpcollection/phpcollection": "0.2.0",
+        "phpoption/phpoption": ">=1.2.0"
     },
     "require-dev": {
         "dantudor/mockfs": "dev-master",
