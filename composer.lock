@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "803e1a55ff9e63ec067cf03c05f55452",
+    "hash": "f924c3220f8ad82ded3f2582fd6ea0a1",
     "packages": [
         {
             "name": "dantudor/posix",

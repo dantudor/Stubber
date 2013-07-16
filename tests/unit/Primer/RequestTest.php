@@ -49,16 +49,12 @@ class RequestTest extends PHPUnit_Framework_TestCase
     {
         $responseOptionName = 'Mock';
         $responseOptionValue = true;
-        $defaultResponseOptions = array();
-        $responseOptions = array($responseOptionName => $responseOptionValue);
 
         $request = new \Stubber\Primer\Request();
 
-        $this->assertSame($defaultResponseOptions, $request->getResponseOptions());
+        $this->assertSame(0, $request->getResponseOptions()->count());
         $this->assertSame($request, $request->addResponseOption($responseOptionName, $responseOptionValue));
-        $this->assertSame($responseOptionValue, $request->getResponseOption($responseOptionName));
-        $this->assertSame($responseOptions, $request->getResponseOptions());
-        $this->assertNull($request->getResponseOption('Invalid'));
+        $this->assertSame($responseOptionValue, $request->getResponseOption($responseOptionName)->get());
     }
 
 }

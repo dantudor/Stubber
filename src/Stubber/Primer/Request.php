@@ -3,6 +3,9 @@
 namespace Stubber\Primer;
 
 use JMS\Serializer\Annotation\Type;
+use PhpCollection\Map;
+use PhpOption\Some;
+use PhpOption\None;
 
 /**
  * Class Request
@@ -36,10 +39,18 @@ class Request
     protected $headers = array();
 
     /**
-     * @var array|ResponseOption
-     * @Type("array")
+     * @var \PhpCollection\Map
+     * @Type("\PhpCollection\Map")
      */
-    protected $responseOptions = array();
+    protected $responseOptions;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->responseOptions = new Map();
+    }
 
     /**
      * Set Method
@@ -147,7 +158,7 @@ class Request
      */
     public function addResponseOption($name, $value)
     {
-        $this->responseOptions[$name] = $value;
+        $this->responseOptions->set($name, $value);
 
         return $this;
     }
@@ -155,7 +166,7 @@ class Request
     /**
      * Get Response Options
      *
-     * @return array|ResponseOption
+     * @return Map
      */
     public function getResponseOptions()
     {
@@ -167,14 +178,10 @@ class Request
      *
      * @param string $name
      *
-     * @return null|mixed
+     * @return Some|None
      */
     public function getResponseOption($name)
     {
-        if (array_key_exists($name, $this->responseOptions)) {
-            return $this->responseOptions[$name];
-        }
-
-        return null;
+        return $this->responseOptions->get($name);
     }
 }
