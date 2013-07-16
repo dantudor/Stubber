@@ -2,16 +2,17 @@
 
 namespace Stubber;
 
+use ProcessControl\Process;
 use ProcessControl\ProcessControlService;
 use Symfony\Component\Filesystem\Filesystem;
-
+use Symfony\Component\Finder\Finder;
 
 /**
  * Class ProcessManager
  *
  * @package Stubber
  */
-class ProcessManager
+class ProcessManager extends ProcessControlService
 {
     /**
      * @var Filesystem
@@ -19,9 +20,9 @@ class ProcessManager
     protected $filesystem;
 
     /**
-     * @var ProcessControlService
+     * @var Finder
      */
-    protected $processControlService;
+    protected $finder;
 
     /**
      * @var string
@@ -32,77 +33,82 @@ class ProcessManager
      * Constructor
      *
      * @param Filesystem            $filesystem
-     * @param ProcessControlService $processControlService
+     * @param Finder                $finder
      * @param null|string           $pidFolder
      */
-    public function __construct(Filesystem $filesystem, ProcessControlService $processControlService, $pidFolder = null)
+    public function __construct(Filesystem $filesystem, Finder $finder, $pidFolder = null)
     {
         $this->filesystem = $filesystem;
-        $this->processControlService = $processControlService;
+        $this->finder = $finder;
 
-        $this->pidFolder =  (is_null($pidFolder)) ? sys_get_temp_dir() . 'stubber/process' : $pidFolder;
+        $this->pidFolder = (is_null($pidFolder)) ? sys_get_temp_dir() . 'stubber/process' : $pidFolder;
 
         if (false === $this->filesystem->exists($this->pidFolder)) {
             $this->filesystem->mkdir($this->pidFolder, 0777, true);
         }
+
+        parent::__construct();
+
+        $this->hydrateProcessesFromFile();
     }
 
     /**
-     * Register Process ID
+     * Hydrate Processes From File
      *
-     * @param string $host
-     * @param int    $port
-     * @param int    $pid
-     *
-     * @return $this
+     * @return ProcessManager
      */
-    public function registerPid($host, $port, $pid)
+    protected function hydrateProcessesFromFile()
     {
-        if ($this->pidExists($host, $port)) {
-            $this->terminatePid($host, $port);
-        }
+        $fileProcesses = $this->finder->files()->in($this->pidFolder);
 
-        file_put_contents($this->pidFolder . '/' . $host . '-' . $port, $pid);
+        foreach ($fileProcesses as $fileProcess) {
+            $processId = file_get_contents($fileProcess);
+            if (false === $this->master->hasChildById($processId)) {
+                $child = new Process($processId, $this->getMaster());
+                $this->getMaster()->addChild($child);
+            }
+        }
 
         return $this;
     }
 
     /**
-     * Process ID Exists?
+     * Register Process ID
      *
-     * @param string $host
-     * @param int    $port
+     * @param Process $process
+     * @param string  $host
+     * @param int     $port
      *
-     * @return bool
+     * @return ProcessManager
      */
-    public function pidExists($host, $port)
+    public function registerProcess(Process $process, $host, $port)
     {
-        if ($this->filesystem->exists($this->pidFolder . '/' . $host . '-' . $port)) {
-            return true;
+        if ($this->getMaster()->hasChildById($process->getId())) {
+            $this->terminateProcess($process, $host, $port);
         }
 
-        return false;
+        file_put_contents($this->pidFolder . '/' . $host . ':' . $port, $process->getId());
+
+        return $this;
     }
 
     /**
-     * Terminate Process ID
+     * Terminate Process
      *
-     * @param string $host
-     * @param int    $port
+     * @param Process $process
+     *
+     * @return ProcessManager
      */
-    public function terminatePid($host, $port)
+    public function terminateProcess(Process $process)
     {
-        $processFile = $this->pidFolder . '/' . $host . '-' . $port;
-        if ($this->filesystem->exists($processFile)) {
-            $processId = file_get_contents($this->pidFolder . '/' . $host . '-' . $port);
-
-            if ($this->processControlService->getMaster()->hasChildById($processId)) {
-                $this->processControlService->terminateProcess(
-                    $this->processControlService->getMaster()->getChildById($processId)
-                );
+        $fileProcesses = $this->finder->files()->in($this->pidFolder);
+        foreach ($fileProcesses as $fileProcess) {
+            $processId = file_get_contents($fileProcess);
+            if ($process->getId() == $processId) {
+                $this->filesystem->remove($fileProcess->getPathname());
             }
-
-            $this->filesystem->remove($processFile);
         }
+
+        return parent::terminateProcess($process);
     }
 }

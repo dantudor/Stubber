@@ -1,90 +1,84 @@
 <?php
 
+use Stubber\ProcessManager;
+use MockFs\MockFs;
+use ProcessControl\Process;
+
 class ProcessManagerTest extends PHPUnit_Framework_TestCase
 {
+    protected $mockFilesystem;
 
-    public function testPidExistsSuccess()
+    protected $mockFinder;
+
+    /**
+     * @var MockFs
+     */
+    protected $mockFs;
+
+    public function setUp()
     {
-        $filesystem = Mockery::mock('\Symfony\Component\Filesystem\Filesystem');
-        $filesystem->shouldReceive('exists')->andReturn(true);
-
-        $processControlService = Mockery::mock('\ProcessControl\ProcessControlService');
-
-        $mockFs = new \MockFs\MockFs();
-        $mockFs->getFileSystem()->addDirectory('process');
-
-        $processManager = new \Stubber\ProcessManager($filesystem, $processControlService, 'mfs::/process');
-
-        $this->assertTrue($processManager->pidExists('127.0.0.1', 8080));
+        $this->mockFilesystem = Mockery::mock('\Symfony\Component\Filesystem\Filesystem');
+        $this->mockFinder = new Symfony\Component\Finder\Finder();
+        $this->mockFs = new MockFs();
     }
 
-    public function testPidExistsFailure()
+    public function testConstructMissingDirectory()
     {
-        $filesystem = Mockery::mock('\Symfony\Component\Filesystem\Filesystem');
-        $filesystem->shouldReceive('exists')->andReturn(false);
-        $filesystem->shouldReceive('mkdir')->andReturn(true);
+        $this->mockFs->getFileSystem()->addDirectory('stubber');
+        $pidFolder = 'mfs://stubber/process';
 
-        $processControlService = Mockery::mock('\ProcessControl\ProcessControlService');
+        $this->mockFilesystem->shouldReceive('exists')->with($pidFolder)->andReturn(false);
+        $this->mockFilesystem->shouldReceive('mkdir')->with($pidFolder, 0777, true)->andReturn(true);
 
-        new \MockFs\MockFs();
+        new ProcessManager(new \Symfony\Component\Filesystem\Filesystem(), $this->mockFinder, $pidFolder);
 
-        $processManager = new \Stubber\ProcessManager($filesystem, $processControlService, 'mfs://process');
-
-        $this->assertFalse($processManager->pidExists('127.0.0.1', 8080));
+        $this->assertInstanceOf('\MockFs\Object\Directory', $this->mockFs->getFileSystem()->getChildByPath('/stubber/process'));
     }
 
-    public function testRegisterNewPid()
+    public function testConstructWithDirectory()
     {
-        $host = '127.0.0.1';
-        $port = 8080;
-        $pid = '1234';
+        $pidFolder = 'mfs://stubber/process';
+        $this->mockFs->getFileSystem()->addDirectory('process', '/stubber');
 
-        $filesystem = Mockery::mock('\Symfony\Component\Filesystem\Filesystem');
-        $filesystem->shouldReceive('exists')->andReturn(false);
-        $filesystem->shouldReceive('mkdir')->andReturn(true);
+        $this->mockFilesystem->shouldReceive('exists')->with($pidFolder)->andReturn(true);
 
-        $processControlService = Mockery::mock('\ProcessControl\ProcessControlService');
-
-        $mockFs = new \MockFs\MockFs();
-        $mockFs->getFileSystem()->addDirectory('process');
-
-        $processManager = new \Stubber\ProcessManager($filesystem, $processControlService, 'mfs://process');
-
-        $this->assertSame($processManager, $processManager->registerPid($host, $port, $pid));
-        $this->assertTrue(file_exists('mfs://process/' . $host . '-' . $port));
-        $this->assertSame($pid, file_get_contents('mfs://process/' . $host . '-' . $port));
+        new ProcessManager($this->mockFilesystem, $this->mockFinder, $pidFolder);
     }
 
-    public function testRegisterReplacementPid()
+    public function testHydrateFromFileWithTwoResults()
     {
-        $host = '127.0.0.1';
-        $port = 8080;
-        $oldPid = '1234';
-        $pid = '5678';
+        $pidFolder = 'mfs://stubber/process';
+        $this->mockFs->getFileSystem()->addDirectory('process', '/stubber');
+        $this->mockFs->getFileSystem()->addFile('127.0.0.1:8080', 1234, '/stubber/process');
+        $this->mockFs->getFileSystem()->addFile('127.0.0.1:8888', 5678, '/stubber/process');
 
-        $filesystem = Mockery::mock('\Symfony\Component\Filesystem\Filesystem');
-        $filesystem->shouldReceive('exists')->andReturn(true);
-        $filesystem->shouldReceive('remove')->andReturn(true);
+        $this->mockFilesystem->shouldReceive('exists')->with($pidFolder)->andReturn(true);
 
-        $childProcess = Mockery::mock('\ProcessControl\Process');
+        $processManager = new ProcessManager($this->mockFilesystem, $this->mockFinder, $pidFolder);
+        $this->assertSame(
+            count($this->mockFs->getFileSystem()->getChildByPath('/stubber/process')->getChildren()),
+            $processManager->getMaster()->getChildCount()
+        );
+    }
 
-        $masterProcess = Mockery::mock('\ProcessControl\Process');
-        $masterProcess->shouldReceive('hasChildById')->with($oldPid)->andReturn(true);
-        $masterProcess->shouldReceive('getChildById')->with($oldPid)->andReturn($childProcess);
+    public function testRegisterProcessTerminatesExisting()
+    {
+        $pidFolder = 'mfs://stubber/process';
+        $this->mockFs->getFileSystem()->addDirectory('process', '/stubber');
+        $this->mockFs->getFileSystem()->addFile('127.0.0.1:8080', 1234, '/stubber/process');
 
-        $processControlService = Mockery::mock('\ProcessControl\ProcessControlService');
-        $processControlService->shouldReceive('getMaster')->andReturn($masterProcess);
-        $processControlService->shouldReceive('terminateProcess')->with($childProcess)->andReturn(true);
+        $this->mockFilesystem->shouldReceive('exists')->with($pidFolder)->andReturn(true);
+        $this->mockFilesystem->shouldReceive('remove')->with($pidFolder . '/127.0.0.1:8080')->andReturn(true);
 
-        $mockFs = new \MockFs\MockFs();
-        $mockFs->getFileSystem()->addFile('127.0.0.1-8080', $oldPid, '/process');
+        $processManager = new ProcessManager($this->mockFilesystem, $this->mockFinder, $pidFolder);
+        $processManager->registerProcess(
+            new Process(1234),
+            '127.0.0.1',
+            'mock'
+        );
 
-        $processManager = new \Stubber\ProcessManager($filesystem, $processControlService, 'mfs://process');
 
-        $this->assertTrue(file_exists('mfs://process/' . $host . '-' . $port));
-        $this->assertSame($oldPid, file_get_contents('mfs://process/' . $host . '-' . $port));
-        $this->assertSame($processManager, $processManager->registerPid($host, $port, $pid));
-        $this->assertTrue(file_exists('mfs://process/' . $host . '-' . $port));
-        $this->assertSame($pid, file_get_contents('mfs://process/' . $host . '-' . $port));
+
+        $this->assertSame('1234', file_get_contents($pidFolder . '/127.0.0.1:mock'));
     }
 }

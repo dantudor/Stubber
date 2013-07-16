@@ -240,12 +240,14 @@ class Server
         $this->primer->prepare();
 
         $server = $this;
-        $this->process = $this->processManager->parallel(function(Process $process) use ($server) {
+        $processManager = $this->processManager;
+
+        $this->process = $this->processManager->parallel(function(\ProcessControl\Process $process) use ($server, $processManager) {
             try {
-                $server->getProcessManager()->registerPid($server->getHost(), $server->getPort(), $process->pid);
+                $processManager->registerProcess($process, $server->getHost(), $server->getPort());
                 $server->getSocketServer()->listen($server->getPort(), $server->getHost());
             } catch(ConnectionException $e) {
-                $process->kill(9);
+                $processManager->terminateProcess($process);
             }
 
             $server->getLoop()->run();

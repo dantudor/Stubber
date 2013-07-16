@@ -19,9 +19,10 @@
         "php": ">=5.3",
         "react/http": "0.3.*",
         "symfony/filesystem": ">=2.1",
-        "dantudor/process-control": "dev-master",
-        "doctrine/annotations": "v1.1.2",
+        "symfony/finder": ">=2.1",
         "jms/serializer": ">=0.11.0",
+        "doctrine/annotations": "1.1.2",
+        "dantudor/process-control": "dev-master",
         "phpcollection/phpcollection": "0.2.0",
         "phpoption/phpoption": ">=1.2.0"
     },

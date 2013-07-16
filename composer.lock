@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "45d8c5fae30d75707bfbc7dfa149a8f2",
+    "hash": "8128089481ec982315e10af1468c4e6d",
     "packages": [
         {
             "name": "dantudor/pcntl",
@@ -88,12 +88,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dantudor/ProcessControl.git",
-                "reference": "4740ba499d4ef492632f35d61b50f84a2d902d04"
+                "reference": "bff3e820ac7f5ec508098e1b008145cc3b4be3f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dantudor/ProcessControl/zipball/4740ba499d4ef492632f35d61b50f84a2d902d04",
-                "reference": "4740ba499d4ef492632f35d61b50f84a2d902d04",
+                "url": "https://api.github.com/repos/dantudor/ProcessControl/zipball/bff3e820ac7f5ec508098e1b008145cc3b4be3f9",
+                "reference": "bff3e820ac7f5ec508098e1b008145cc3b4be3f9",
                 "shasum": ""
             },
             "require": {
@@ -133,7 +133,7 @@
                 "posix",
                 "process"
             ],
-            "time": "2013-07-16 18:02:36"
+            "time": "2013-07-16 20:39:31"
         },
         {
             "name": "doctrine/annotations",
@@ -812,6 +812,53 @@
             "description": "Symfony Filesystem Component",
             "homepage": "http://symfony.com",
             "time": "2013-06-04 15:02:05"
+        },
+        {
+            "name": "symfony/finder",
+            "version": "v2.3.1",
+            "target-dir": "Symfony/Component/Finder",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Finder.git",
+                "reference": "v2.3.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Finder/zipball/v2.3.1",
+                "reference": "v2.3.1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Finder\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Finder Component",
+            "homepage": "http://symfony.com",
+            "time": "2013-06-02 12:05:51"
         }
     ],
     "packages-dev": [
