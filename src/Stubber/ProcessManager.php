@@ -96,10 +96,11 @@ class ProcessManager extends ProcessControlService
      * Terminate Process
      *
      * @param Process $process
+     * @param int $signal
      *
      * @return ProcessManager
      */
-    public function terminateProcess(Process $process)
+    public function terminateProcess(Process $process, $signal = SIGKILL)
     {
         $fileProcesses = $this->finder->files()->in($this->pidFolder);
         foreach ($fileProcesses as $fileProcess) {
@@ -109,6 +110,6 @@ class ProcessManager extends ProcessControlService
             }
         }
 
-        return parent::terminateProcess($process);
+        return parent::terminateProcess($process, $signal);
     }
 }
